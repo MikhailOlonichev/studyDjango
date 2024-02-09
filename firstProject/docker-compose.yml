@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: django_db
+      POSTGRES_USER: django_admin
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5432:5432"
+
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DEFAULT_USERNAME: django_db
+      ADMINER_DEFAULT_PASSWORD: 1234
+    depends_on:
+      - postgres
+
+  django_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    environment:
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: 5432
+      DJANGO_DB_NAME: django_db
+      DJANGO_DB_USER: django_admin
+      DJANGO_DB_PASSWORD: 1234
